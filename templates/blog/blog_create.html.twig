@@ -1,0 +1,63 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Blog Symfony | 
+    {% if editMode %}
+        Modification de l'article
+    {% else %}
+        Nouvel Article
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="text-center my-5">
+
+    {% if editMode %}
+    {# Si l'article possède un Id (via editMode) #}
+        Modification de l'article
+    {% else %}
+    {# Sinon si pas d'ID on affiche Nouvel article #}
+        Nouvel Article
+    {% endif %}
+    </h1>
+{# V1 du formulaire. 
+    <form method="post">
+        <div class="mb-3">
+            <label for="titre" class="form-label">Titre</label>
+            <input type="text" class="form-control" id="titre" name="titre">
+        </div>
+
+        <div class="mb-3">
+            <label for="contenu" class="form-label">Contenu</label>
+            <textarea class="form-control" id="contenu" name="contenu"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="photo" class="form-label">Photo</label>
+            <input type="text" class="form-control" id="photo" name="photo">
+        </div>
+
+        <button type="submit" class="btn btn-dark rounded-pill mb-3">Enregistrer</button>
+    </form> #}
+
+    {# V2 avec le formulaire Symfony #}
+    {# formArticle est transmis par le controller via la méthode creativeView(), il contient tous les champs du formulaire.  #}
+    {{form_start(formArticle)}}
+
+        {{form_row(formArticle.titre)}}
+        {{form_row(formArticle.contenu)}}
+        {{form_row(formArticle.photo)}}
+
+        <button type="submit" class="btn btn-dark mb-5">{% if editMode %}
+        {# Si l'article possède un Id (via editMode) #}
+            Enregistrer les modifications
+        {% else %}
+        {# Sinon si pas d'ID on affiche Nouvel article #}
+            Enregistrer l'article
+        {% endif %}
+        </button>
+
+    {{form_end(formArticle)}}
+
+{% endblock %}
