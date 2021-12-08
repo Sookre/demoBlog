@@ -10,7 +10,9 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class BlogController extends AbstractController
 {
@@ -61,10 +63,19 @@ class BlogController extends AbstractController
 
     #[Route('/blog/new', name:'blog_create')]
     #[Route('/blog/{id}/edit', name:'blog_edit')]
-    public function blogCreate(Article $article=null,Request $request, EntityManagerInterface $manager):Response
+    public function blogCreate(Article $article=null,Request $request, EntityManagerInterface $manager, SluggerInterface $slugger):Response
     {
         //Si la variable article est null alors on rentre dans la route /blog/new, on entre dans le if et on crée une nouvelle instance de l'entité article. 
         //Si la variable $article n'est pas null, on nous sommes sur la route /blog/{id}/edit, nous n'entrons donc pas dans le if. 
+
+        // Si la condition IF retourne TRUE, cela veut dire que $article contient un article stocké en BDD, on stock la photo actuellement de l'article dans la variable $photoActuelle
+        if($article)
+        {
+            $photoActuelle = $article->getPhoto();
+        }
+
+
+
         if(!$article)
         {
             $article = new Article;
@@ -84,6 +95,41 @@ class BlogController extends AbstractController
             if (!$article->getId())
             $article->setDate(new \DateTime());
 
+                $photo = $formArticle->get('photo')->getData();
+                
+
+            if($photo)
+            {
+                $nomOriginePhoto = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+                // dd($nomOriginePhoto);
+
+                $secureNomPhoto = $slugger->slug($nomOriginePhoto);
+
+                $nouveauNomFichier = $secureNomPhoto . '-' . uniqid() . '.' . $photo->guessExtension();
+                // dd($nouveauNomFichier);
+
+                try
+                {
+                    // on copie l'image vers le bon chemin, vers le bon dossier 'public/uploads/photos' (services.yaml)
+                    $photo->move(
+                        $this->getParameter('photo_directory'),
+                        $nouveauNomFichier
+                    );
+                }
+                catch(FileException $e)
+                {
+                
+                }
+
+                $article->setPhoto($nouveauNomFichier);
+            }
+            else // sinon aucune image n'a été uplodé, on renvoi dans la bdd la photo actuelle de l'article
+            {
+                if(isset($photoActuelle))
+                $article->setPhoto($photoActuelle);
+                else
+                $article->setPhoto(null);
+            }
             // dd($article);
 
             //Message de validation insertion
@@ -125,7 +171,8 @@ class BlogController extends AbstractController
         return $this->render('blog/blog_create.html.twig', [
             'formArticle'=>$formArticle->createView(), //on transmet le formulaire au template afin de pouvoir l'afficher avec Twig.
             //createView() retourne un objet qui représente l'affichage du formulaire, on le récupère dans le template_blog_create.html.twig
-            'editMode'=> $article->getId()
+            'editMode'=> $article->getId(),
+            'photoActuelle' =>$article->getPhoto()
         ]);
     }
 
