@@ -49,6 +49,17 @@
         {{form_row(formArticle.contenu)}}
         {{form_row(formArticle.photo)}}
 
+        {# Si photoActuelle retourne TRUE, cela veut dire que l'article possède une photo, c'est une modification, alors on entre dans la condition IF et on affiche la photo actuelle
+        de l'article #}
+        {% if photoActuelle %}
+
+            <em>Vous pouvez une nouvelle photo si vous souhaitez la modifier</em>
+            <p class="col-1">
+            <img src="{{ asset('uploads/photos/' ~ photoActuelle) }}" alt="" class="col-12 img-responsive">
+            </p>
+
+        {% endif %}
+
         <button type="submit" class="btn btn-dark mb-5">{% if editMode %}
         {# Si l'article possède un Id (via editMode) #}
             Enregistrer les modifications

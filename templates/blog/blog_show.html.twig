@@ -14,9 +14,16 @@
   </div>
 
 {% endfor %}
+
+  {% if article.photo != null %}
+    {% set col = 8 %}
+  {% else %}
+    {% set col = 12 %}
+  {% endif %}
+
 <div class="col-md-12">
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm position-relative">
-        <div class="col p-4 d-flex flex-column position-static">
+        <div class="col-{{ col }} p-4 d-flex flex-column position-static">
           <strong class="d-inline-block mb-2 text-primary">World</strong>
           <h3 class="mb-0">{{article.titre}}</h3>
           <div class="mb-1 text-muted">Publié le {{article.date|date('d/m/Y')}} à {{article.date|date('H:i:s')}}</div>
@@ -27,11 +34,14 @@
             <a href="{{path('blog_edit', {'id':article.id}) }}" class="btn btn-dark">Modifier</a>
             <a href="#" class="btn btn-dark">Imprimer</a>
           </p>
+      </div>
+        {% if article.photo != null %}
 
+        <div class="col-4 d-auto d-none d-lg-block">
+          <img src="{{ asset('uploads/photos/' ~ article.photo) }}" alt="{{ article.titre }}" class="col-12 img-responsive">
         </div>
-        <div class="col-auto d-none d-lg-block">
-          <img src="{{article.photo}}" alt="">
-        </div>
+
+        {% endif %}
       </div>
     </div>
 

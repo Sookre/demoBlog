@@ -58,9 +58,8 @@ class ArticleType extends AbstractType
                         'mimeTypes'=> ['image/jpeg', 'image/png', 'image/png'],
                         'mimeTypesMessage'=> 'Formats autorisés : jpg,jpeg,png'
                     ]),
-                    new NotBlank([
-                        'message'=>"Merci d'uploader une photo."
-                    ])    
+                    
+                       
                 ]
             ])            
         ;
