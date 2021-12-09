@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Form\ArticleType;
+use App\Form\CommentType;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -51,6 +53,7 @@ class BlogController extends AbstractController
         findAll() : méthode issue de la classe ArticleRepository permettant de sélectionner l'ensemble de la table SQL et de récupérer un tableau multidimensionnel contenant l'ensemble des articles stockés en BDD.
         */
         $articles=$repoArticle->findAll(); //SELECT * FROM article + Fectch_ALL
+      
 
         //dump() & dd() sont des fonctions de debugages inclues dans Symfony
         // dd($articles);
@@ -179,8 +182,34 @@ class BlogController extends AbstractController
     // Méthode permettant d'afficher le détail d'un article.
     // On définit une route 'paramétrée' {id}, ici la route permet de recevoir l'id d'un article stocké en BDD.   
     #[Route('/blog/{id}', name: 'blog_show')]
-    public function blogShow(Article $article): Response
+    public function blogShow(Article $article, Request $request, EntityManagerInterface $manager): Response
     {
+
+        $user = $this->getUser();
+        dd($user);
+
+        
+        $comment = new Comment;
+        $formComment = $this->createForm(CommentType::class, $comment);
+        $formComment->handleRequest($request);
+
+        if($formComment->isSubmitted() && $formComment->isValid())
+        {
+            $comment->setDate(new \DateTime())
+                        ->setArticle($article);
+
+            //dd($comment);
+
+            $manager->persist($comment);
+            $manager->flush();
+
+            $this->addFlash('success', "Félicitations ! Votre commentaire a bien été posté !");
+
+            return $this->redirectToRoute('blog_show', [
+                'id' => $article->getID()
+            ]);
+        }
+
         /* 
         Ici, nous envoyons un id dans l'URL et nous imposons en argument un objet issu de l'entité/class Article donc de la table SQL. Symfony comprend est capable de sélectionner en BDD l'article en fonction de l'id passé en URL et de l'envoyer en URL et de l'envoyer automatiquement en argument de la méthode blogShow() dans la variable $article.
         */
@@ -195,8 +224,11 @@ class BlogController extends AbstractController
 
         //L'id transmit dans la route 'blog/5' est transmit automatiquement en argument de la méthode blogShow($id) dans la variable de récéption $id
         // dd($id);
+        
+
         return $this->render('blog/blog_show.html.twig', [
-            'article'=>$article //on transmet le template de l'article sélectionné en BDD afin que Twig puisse traiter et afficher les données sur la page.
+            'article'=>$article, //on transmet le template de l'article sélectionné en BDD afin que Twig puisse traiter et afficher les données sur la page.
+             'formComment'=> $formComment->createView()
         ]);
     }
     

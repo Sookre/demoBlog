@@ -18,6 +18,13 @@ Twig est un language de rendu, un moteur de template:
 {{ variable }}-->Interpolation
 {% %}--> Commande (ex : if/else | for/endfor)
 #}
+
+{% for message in app.flashes('success') %}
+
+    <div class="col-8 mx-auto text-center p-3 bg-success text-white">{{ message }}</div>
+
+{% endfor %}
+
 <h1 class="text-center my-5">{{title}}</h1>
 
 {% if age > 18 %}

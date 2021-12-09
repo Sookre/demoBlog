@@ -24,7 +24,7 @@
 <div class="col-md-12">
       <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm position-relative">
         <div class="col-{{ col }} p-4 d-flex flex-column position-static">
-          <strong class="d-inline-block mb-2 text-primary">World</strong>
+          <strong class="d-inline-block mb-2 text-primary">{{ article.category.titre }}</strong>
           <h3 class="mb-0">{{article.titre}}</h3>
           <div class="mb-1 text-muted">Publié le {{article.date|date('d/m/Y')}} à {{article.date|date('H:i:s')}}</div>
           <p class="card-text mb-auto">{{article.contenu |striptags}}</p>
@@ -43,6 +43,59 @@
 
         {% endif %}
       </div>
+
+      <h2 class="mt-4">Donner votre avis</h2>
+
+      {% if app.user %}
+
+
+      {{ form_start(formComment) }}
+
+        {{ form_widget(formComment) }}
+
+        <button class="btn btn-dark">Poster</button>
+
+        {{ form_end(formComment) }}
+
+      {% else %}
+
+      <p><a href="{{ path('app_register') }}" class="link-secondary">Créer votre compte</a>ou <a href="{{ path('app_login') }}" class="link-secondary">Identifiez-vous</a> afin de pouvoir poster un avis.</p>
+
+{% if article.comments is not empty %}
+
+      {% for comment in article.comments %}
+
+      {# {{ dump (comment) }} #}
+
+      <div class="d-flex justify-content-between shadow-sm p-2 mb-3">
+          <div class="col-4">
+            publié par {{ comment.auteur }} <small>(le {{ comment.date|date('d/m/Y') }} à {{ comment.date|date('H:i:s') }})</small>
+          </div>
+          <div class="col-7">
+
+          <p>{{ comment.commentaire|raw }}</p>
+
+          </div>
+      </div>
+
+      {% endfor %}
+
+    {% else %}
+
+        <p class="fst-italic text-center mb-5">Soyez le premier à donner votre avis...</p>
+
+    {% endif %}
+
     </div>
+    
 
 {% endblock %}
+
+
+{# exo : réaliser un formulaire permettant d'inserer des nouveaux commentaire en BDD 
+        1 : créer le formulaire à partir de l'entité Comment (make:form)
+        2 : Dans le controller, il faut importer et créer le formulaire (createForm)
+        3 : afficher le formulaire sur le template (form_start() / form_row())
+        4 : a la validation du formulaire, executer la requete d'insertion (persist()/ flush())
+        5 : après l'insertion, rediriger l'internauteet afficher un message de valisation(addflash)
+        6 : Faites en sorte d'afficher 'soyer le premier à poster un commentaire' si aucun commentaire n'est associé à #}
