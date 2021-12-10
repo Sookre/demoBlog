@@ -1,0 +1,14 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hello BackOfficeController!{% endblock %}
+
+{% block body %}
+
+    <h1 class='text-center my-5'>Bienvenue {{ app.user.prenom }} {{ app.user.nom }} dans l'espace ! </h1>
+
+    <h4 class='text-center'>vous êtes dans votre backoffice</h4>
+
+    <p class='text-center'>Vous pouvez ici gérer la totalité de votre Blog, le gestion des articles, catégories, commentaires et utilisateurs !</p>
+
+
+{% endblock %}

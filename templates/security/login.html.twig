@@ -8,7 +8,12 @@
         <div class="alert alert-danger p-3 text-white text-center mx-auto my-3">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
+    {% for message in app.flashes('success') %}
 
+        <div class="col-6 bg-sucess text-center text-white p-3 mx-auto">
+        </div>
+
+    {% endfor %}
 
     <h1 class="h3 mb-3 font-weight-normal text-center">Identifiez-vous</h1>
 
