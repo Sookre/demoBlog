@@ -1,0 +1,46 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}BlogSymfony | Gestion des articles{% endblock %}
+
+{% block body %}
+
+    <table class="table table-striped">
+        <tr>
+        
+        {% for data in colonnes %}
+
+            {% if data !='id' %}
+
+                 <th class="text-center">{{ data|capitalize }}</th>
+
+            {% endif %}
+
+        {% endfor %}
+            <th>Cat.</th>
+            <th>Nb Comm.</th>
+            <th>Action</th>
+        
+        </tr>
+
+        {% for data in data %}
+        
+            <tr>
+           {# {{ dump(data) }} #}
+
+            <td>{{ data.titre }}</td>
+            <td>{{ data.contenu }}</td>
+            <td>{{ data.photo }}</td>
+            <td>{{ data.date|date('m/d/Y') }}</td>
+            <td>{{ data.category.titre }}</td>
+            <td>{{ data.comments|length }}</td>
+
+            <td><a href=""></a><i class="bi bi-file-excel-fill"></i>
+            <a href=""></a><i class="bi bi-cup-fill"></i></td>
+            </tr>
+
+        
+        {% endfor %}
+
+    </table>
+
+{% endblock %}
